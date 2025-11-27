@@ -15,6 +15,13 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vonage.client.VonageClient;
+import com.vonage.client.sms.MessageStatus;
+import com.vonage.client.sms.SmsSubmissionResponse;
+import com.vonage.client.sms.messages.TextMessage;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 
 public class App {
     private static final String LAT = "51.49";
@@ -99,6 +106,11 @@ public class App {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+        Dotenv dotenv = Dotenv.load();
+        final String phoneNum = dotenv.get("SMS_PHONE_NUM");
+        final String vonageApiKey = dotenv.get("VONAGE_API_KEY");
+        final String vonageApiSecret = dotenv.get("VONAGE_API_SECRET");
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
@@ -114,6 +126,17 @@ public class App {
         System.out.println(stats.summary());
 
         // step 3: post the result to the user via AWS SNS
-
+        VonageClient vonageClient = VonageClient.builder().apiKey(vonageApiKey).apiSecret(vonageApiSecret).build();
+        TextMessage message = new TextMessage(
+            "Commute Notification",
+            phoneNum,
+            stats.summary()
+        );
+        SmsSubmissionResponse vonageRes = vonageClient.getSmsClient().submitMessage(message);
+        if (vonageRes.getMessages().get(0).getStatus() == MessageStatus.OK) {
+            System.out.println("Message sent successfully.");
+        } else {
+            System.out.println("Message failed with error: " + vonageRes.getMessages().get(0).getErrorText());
+        }
     }
 }
