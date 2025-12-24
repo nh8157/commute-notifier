@@ -23,9 +23,9 @@ public class SmsClient {
         SmsSubmissionResponse subRes = this.client.getSmsClient().submitMessage(tm);
         MessageStatus messageStatus = subRes.getMessages().get(0).getStatus();
         if (messageStatus == MessageStatus.OK) {
-            System.out.println("SMS delivery: successful.");
+            System.out.println("✅ SMS delivery: successful.");
         } else {
-            throw new Exception("SMS delivery failed due to %s.".formatted(messageStatus));
+            throw new Exception("❌ SMS delivery failed due to %s.".formatted(messageStatus));
         }
     }
 }
