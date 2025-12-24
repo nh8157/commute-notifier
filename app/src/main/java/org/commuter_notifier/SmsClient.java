@@ -14,7 +14,7 @@ public class SmsClient {
         this.phoneNumber = phoneNumber;
     }
 
-    public void sendSms(String message) {
+    public void sendSms(String message) throws Exception {
         TextMessage tm = new TextMessage(
             "Commute Notification",
             this.phoneNumber,
@@ -23,9 +23,9 @@ public class SmsClient {
         SmsSubmissionResponse subRes = this.client.getSmsClient().submitMessage(tm);
         MessageStatus messageStatus = subRes.getMessages().get(0).getStatus();
         if (messageStatus == MessageStatus.OK) {
-            System.out.println("SMS delivery successful.");
+            System.out.println("SMS delivery: successful.");
         } else {
-            System.out.println("SMS delivery failed: %s.".formatted(messageStatus));
+            throw new Exception("SMS delivery failed due to %s.".formatted(messageStatus));
         }
     }
 }

@@ -27,7 +27,7 @@ record OpenMeteoConfig(
     String officeLon,
     String homeLat,
     String homeLon,
-
+    String forecastMode,
     Integer forecastDurationHours,
     ZoneId timeZone
 ) {
@@ -40,6 +40,7 @@ record OpenMeteoConfig(
                 dotenv.get("OFFICE_LON"),
                 dotenv.get("HOME_LAT"),
                 dotenv.get("HOME_LON"),
+                dotenv.get("FORECAST_MODE"),
                 Integer.valueOf(dotenv.get("FORECAST_DURATION_HOURS")),
                 ZoneId.of(dotenv.get("TIME_ZONE"))
             );
