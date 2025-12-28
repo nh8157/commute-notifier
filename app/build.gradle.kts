@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("com.gradleup.shadow") version "9.3.0"
 }
 
 repositories {
@@ -24,6 +25,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.vonage:server-sdk:9.+")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.2")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
