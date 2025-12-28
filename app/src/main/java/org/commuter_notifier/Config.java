@@ -3,6 +3,27 @@ package org.commuter_notifier;
 import java.time.ZoneId;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+
+class AwsParameterManager {
+    public static SsmClient INSTANCE;
+
+    public static synchronized SsmClient getClient() {
+        if (INSTANCE == null) {
+            INSTANCE = SsmClient.builder().region(Region.of("eu-west-2")).build();
+        }
+        return INSTANCE;
+    }
+
+    public static String fromSsm(String secretName) {
+        return getClient().getParameter(
+            GetParameterRequest.builder()
+            .name(secretName).withDecryption(true)
+            .build()).parameter().value();
+    }
+}
 
 public record Config(
     OpenMeteoConfig openMeteo,
@@ -33,16 +54,20 @@ record OpenMeteoConfig(
 ) {
     private static OpenMeteoConfig INSTANCE;
 
+    private final static String DEFAULT_FORECAST_MODE = "temperature_2m,precipitation_probability,precipitation,apparent_temperature";
+    private final static Integer DEFAULT_FORECAST_DURATION_HOURS = 2;
+    private final static String DEFAULT_TIME_ZONE = "Europe/London";
+
     public static synchronized OpenMeteoConfig getInstance(Dotenv dotenv) {
         if (INSTANCE == null) {
             INSTANCE = new OpenMeteoConfig(
-                dotenv.get("OFFICE_LAT"),
-                dotenv.get("OFFICE_LON"),
-                dotenv.get("HOME_LAT"),
-                dotenv.get("HOME_LON"),
-                dotenv.get("FORECAST_MODE"),
-                Integer.valueOf(dotenv.get("FORECAST_DURATION_HOURS")),
-                ZoneId.of(dotenv.get("TIME_ZONE"))
+                AwsParameterManager.fromSsm("OFFICE_LAT"),
+                AwsParameterManager.fromSsm("OFFICE_LON"),
+                AwsParameterManager.fromSsm("HOME_LAT"),
+                AwsParameterManager.fromSsm("HOME_LON"),
+                DEFAULT_FORECAST_MODE,
+                DEFAULT_FORECAST_DURATION_HOURS,
+                ZoneId.of(DEFAULT_TIME_ZONE)
             );
         }
         return INSTANCE;
@@ -57,13 +82,15 @@ record VonageConfig(
 ) {
     private static VonageConfig INSTANCE;
 
+    private final static String DEFAULT_COMM_METHOD = "SMS";
+
     public static synchronized VonageConfig getInstance(Dotenv dotenv) {
         if (INSTANCE == null) {
             INSTANCE = new VonageConfig(
-                dotenv.get("PHONE_NUM"),
-                dotenv.get("VONAGE_API_KEY"),
-                dotenv.get("VONAGE_API_SECRET"),
-                dotenv.get("VONAGE_COMM_MODE", "SMS").equals("SMS") ? CommMethod.SMS : CommMethod.WHATSAPP
+                AwsParameterManager.fromSsm("PHONE_NUM"),
+                AwsParameterManager.fromSsm("VONAGE_API_KEY"),
+                AwsParameterManager.fromSsm("VONAGE_API_SECRET"),
+                DEFAULT_COMM_METHOD.equals("SMS") ? CommMethod.SMS : CommMethod.WHATSAPP
             );
         }
         return INSTANCE;

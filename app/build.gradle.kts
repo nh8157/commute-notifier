@@ -26,6 +26,8 @@ dependencies {
     implementation("com.vonage:server-sdk:9.+")
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
     implementation("com.amazonaws:aws-lambda-java-core:1.2.2")
+    implementation(platform("software.amazon.awssdk:bom:2.27.21"))
+    implementation("software.amazon.awssdk:ssm")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
