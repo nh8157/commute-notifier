@@ -41,3 +41,9 @@ application {
     // Define the main class for the application.
     mainClass = "org.commuter_notifier.App"
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

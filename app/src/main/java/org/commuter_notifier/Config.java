@@ -2,7 +2,6 @@ package org.commuter_notifier;
 
 import java.time.ZoneId;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -33,10 +32,9 @@ public record Config(
 
     public static synchronized Config getInstance() {
         if (INSTANCE == null) {
-            Dotenv dotenv = Dotenv.load();
             INSTANCE = new Config(
-                OpenMeteoConfig.getInstance(dotenv),
-                VonageConfig.getInstance(dotenv)
+                OpenMeteoConfig.getInstance(),
+                VonageConfig.getInstance()
             );
         }
         return INSTANCE;
@@ -58,7 +56,7 @@ record OpenMeteoConfig(
     private final static Integer DEFAULT_FORECAST_DURATION_HOURS = 2;
     private final static String DEFAULT_TIME_ZONE = "Europe/London";
 
-    public static synchronized OpenMeteoConfig getInstance(Dotenv dotenv) {
+    public static synchronized OpenMeteoConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new OpenMeteoConfig(
                 AwsParameterManager.fromSsm("OFFICE_LAT"),
@@ -84,7 +82,7 @@ record VonageConfig(
 
     private final static String DEFAULT_COMM_METHOD = "SMS";
 
-    public static synchronized VonageConfig getInstance(Dotenv dotenv) {
+    public static synchronized VonageConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new VonageConfig(
                 AwsParameterManager.fromSsm("PHONE_NUM"),

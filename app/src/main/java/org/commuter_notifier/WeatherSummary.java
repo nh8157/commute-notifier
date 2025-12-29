@@ -28,8 +28,8 @@ public record WeatherSummary(
 
     public WeatherSummary(WeatherForecastClient.OpenMeteoForecast forecast) {
         this(
-            forecast.time().getFirst(),
-            forecast.time().getLast(),
+            forecast.time().get(0),
+            forecast.time().get(forecast.time().size() - 1),
             Collections.min(forecast.temperature_2m()),
             Collections.max(forecast.temperature_2m()),
             Collections.min(forecast.apparent_temperature()),
