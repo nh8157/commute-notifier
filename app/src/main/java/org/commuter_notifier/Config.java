@@ -19,7 +19,7 @@ class AwsParameterManager {
     public static String fromSsm(String secretName) {
         return getClient().getParameter(
             GetParameterRequest.builder()
-            .name(secretName).withDecryption(true)
+            .name("/commuter-notifier/%s".formatted(secretName)).withDecryption(true)
             .build()).parameter().value();
     }
 }
