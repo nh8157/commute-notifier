@@ -36,9 +36,10 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         # Docker handles the JDK/Gradle build internally via your multi-stage Dockerfile
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker push $IMAGE_NAME:$IMAGE_TAG
+        echo "image=$IMAGE_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Update Lambda Function Code
       env:
