@@ -2,6 +2,7 @@ package org.commuter_notifier;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 public record WeatherSummary(
@@ -12,13 +13,13 @@ public record WeatherSummary(
     double lowestApparentTemp,
     double highestApparentTemp
 ) {
-    private static final String MESSAGE_TEMPLATE = "From {0} to {1}, temperature ranges from {2} to {3} (feels like {4} to {5}).\n";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final String MESSAGE_TEMPLATE = "{0}-{1} T{2}/{3} F{4}/{5})";
 
     public String summary() {
-        return MessageFormat.format(
-            MESSAGE_TEMPLATE,
-            this.startTime,
-            this.endTime,
+        return MessageFormat.format(MESSAGE_TEMPLATE,
+            this.startTime.format(FORMATTER),
+            this.endTime.format(FORMATTER),
             this.lowestTemp,
             this.highestTemp,
             this.lowestApparentTemp,
