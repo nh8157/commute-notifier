@@ -20,6 +20,6 @@ public class App {
             CONFIG.vonage().apiSecret(),
             CONFIG.vonage().phoneNum()
         );
-        smsClient.sendSms(summary.summary());
+        smsClient.sendSms(summary.generateMetarSummary());
     }
 }
