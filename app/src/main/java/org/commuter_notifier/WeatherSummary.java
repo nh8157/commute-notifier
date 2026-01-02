@@ -16,7 +16,7 @@ public record WeatherSummary(
     double highestPrecipitationProb
 ) {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-    private static final String BASE_TEMPLATE = "{0}-{1} T{2}/{3} F{4}/{5})";
+    private static final String BASE_TEMPLATE = "{0}-{1} T{2}/{3} F{4}/{5}";
     private static final String PRECIPITATION_TEMPLATE = "RA{0}% {1}";
 
     private String generateMetarBaseMsg() {
@@ -48,7 +48,7 @@ public record WeatherSummary(
     }
 
     public String generateMetarSummary() {
-        return String.join(generateMetarBaseMsg(), generateMetarPrecipitationMsg()).trim();
+        return String.join(" ", generateMetarBaseMsg(), generateMetarPrecipitationMsg()).trim();
     }
 
     public WeatherSummary(WeatherForecastClient.OpenMeteoForecast forecast) {

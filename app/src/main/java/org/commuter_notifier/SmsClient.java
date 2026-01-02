@@ -7,7 +7,9 @@ import com.vonage.client.sms.messages.TextMessage;
 
 public class SmsClient {
     VonageClient client;
-    String phoneNumber;
+    final String phoneNumber;
+    final String msgSender = "Commute";
+
 
     public SmsClient(String apiKey, String apiSecret, String phoneNumber) {
         this.client = VonageClient.builder().apiKey(apiKey).apiSecret(apiSecret).build();
@@ -16,7 +18,7 @@ public class SmsClient {
 
     public void sendSms(String message) throws Exception {
         TextMessage tm = new TextMessage(
-            "Commute Notification",
+            this.msgSender,
             this.phoneNumber,
             message
         );
