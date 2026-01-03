@@ -25,9 +25,6 @@ public class WeatherForecastClient {
     ) {};
 
     public static String fromOpenMeteo(String lat, String lon, String forecastMode, String tz, Integer forecastDurationHours) throws Exception {
-        // provide lat, lon, etc.
-        // send get request to API endpoint
-        // return weather forecast
         Integer forecastDurationMinutes = forecastDurationHours * 4;
         String requestUrl = OPENMETEO_URL.formatted(lat, lon, forecastMode, tz, forecastDurationMinutes.toString());
 
