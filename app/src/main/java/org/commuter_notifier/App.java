@@ -1,13 +1,14 @@
 package org.commuter_notifier;
 
+import java.util.Map;
 
 public class App {
-    private static final Config CONFIG = Config.getInstance();
+    public static void run(Map<String, Object> input) throws Exception{
+        final Config CONFIG = Config.getInstance(input);
 
-    public static void main(String[] args) throws Exception{
         WeatherForecastClient.OpenMeteoForecast openMeteoForecast = WeatherForecastClient.getOpenMeteoForecast(
-            CONFIG.openMeteo().homeLat(),
-            CONFIG.openMeteo().homeLon(),
+            CONFIG.openMeteo().lat(),
+            CONFIG.openMeteo().lon(),
             CONFIG.openMeteo().forecastMode(),
             CONFIG.openMeteo().timeZone().toString(),
             CONFIG.openMeteo().forecastDurationHours()

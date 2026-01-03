@@ -1,6 +1,7 @@
 package org.commuter_notifier;
 
 import java.time.ZoneId;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -36,10 +37,10 @@ public record Config(
 ) {
     private static Config INSTANCE;
 
-    public static synchronized Config getInstance() {
+    public static synchronized Config getInstance(Map<String, Object> input) {
         if (INSTANCE == null) {
             INSTANCE = new Config(
-                OpenMeteoConfig.getInstance(),
+                OpenMeteoConfig.getInstance(input),
                 VonageConfig.getInstance()
             );
         }
@@ -48,10 +49,8 @@ public record Config(
 };
 
 record OpenMeteoConfig(
-    String officeLat,
-    String officeLon,
-    String homeLat,
-    String homeLon,
+    String lat,
+    String lon,
     String forecastMode,
     Integer forecastDurationHours,
     ZoneId timeZone
@@ -67,18 +66,14 @@ record OpenMeteoConfig(
     private final static Integer DEFAULT_FORECAST_DURATION_HOURS = 2;
     private final static String DEFAULT_TIME_ZONE = "Europe/London";
 
-    public static synchronized OpenMeteoConfig getInstance() {
+    public static synchronized OpenMeteoConfig getInstance(Map<String, Object> input) {
         if (INSTANCE == null) {
             Gson gson = new Gson();
-            String home_coord_str = AwsParameterManager.fromSsm("coord", "home");
-            String office_coord_str = AwsParameterManager.fromSsm("coord", "office");
-            Coord office_coord = gson.fromJson(office_coord_str, Coord.class);
-            Coord home_coord = gson.fromJson(home_coord_str, Coord.class);
+            String coord_str = AwsParameterManager.fromSsm("coord", (String) input.get("location"));
+            Coord coord = gson.fromJson(coord_str, Coord.class);
             INSTANCE = new OpenMeteoConfig(
-                office_coord.lat,
-                office_coord.lon,
-                home_coord.lat,
-                home_coord.lon,
+                coord.lat,
+                coord.lon,
                 DEFAULT_FORECAST_MODE,
                 DEFAULT_FORECAST_DURATION_HOURS,
                 ZoneId.of(DEFAULT_TIME_ZONE)
