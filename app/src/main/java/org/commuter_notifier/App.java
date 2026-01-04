@@ -14,6 +14,8 @@ public class App {
             CONFIG.openMeteo().forecastDurationHours()
         );
 
+        boolean tubeStatus = TubeStatusClient.getTubeStatus("jubilee");
+
         WeatherSummary summary = new WeatherSummary(openMeteoForecast);
 
         SmsClient smsClient = new SmsClient(

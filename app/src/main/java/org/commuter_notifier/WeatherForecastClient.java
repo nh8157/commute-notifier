@@ -20,6 +20,7 @@ public class WeatherForecastClient {
         List<Integer> precipitation_probability,
         List<Double> precipitation
     ) {};
+
     public record OpenMeteoResp (
         OpenMeteoForecast minutely_15
     ) {};
