@@ -18,10 +18,11 @@ public class TubeStatusClient {
     ) {};
 
     record TubeStatus(
+        String name,
         List<LineStatus> lineStatuses
     ) {};
 
-    static private String fromTflApi(String lineName) throws Exception {
+    private static String fromTflApi(String lineName) throws Exception {
         String requestUrl = URL_TEMPLATE.formatted(lineName);
 
         HttpClient client = HttpClient.newHttpClient();
@@ -40,14 +41,14 @@ public class TubeStatusClient {
         }
     }
 
-    static private TubeStatus parseTflResp(String resp) {
+    private static TubeStatus parseTflResp(String resp) {
         Gson gson = new Gson();
-        return gson.fromJson(resp, new TypeToken<List<TubeStatus>>() {}.getType());
+        List<TubeStatus> parsed = gson.fromJson(resp, new TypeToken<List<TubeStatus>>() {}.getType());
+        return parsed.get(0);
     }
 
-    static public boolean getTubeStatus(String lineName) throws Exception {
+    public static TubeStatus getTubeStatus(String lineName) throws Exception {
         String resp = fromTflApi(lineName);
-        TubeStatus status = parseTflResp(resp);
-        return status.lineStatuses.get(0).statusSeverity == 10;
+        return parseTflResp(resp);
     }
 }

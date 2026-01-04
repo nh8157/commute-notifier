@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
-public record WeatherSummary(
+public record CommuteSummary(
     LocalDateTime startTime,
     LocalDateTime endTime,
     double lowestTemp,
@@ -13,11 +13,16 @@ public record WeatherSummary(
     double lowestApparentTemp,
     double highestApparentTemp,
     double highestPrecipitationRate,
-    double highestPrecipitationProb
+    double highestPrecipitationProb,
+
+    String tubeName,
+    Integer tubeSeverity,
+    String tubeSeverityDescription
 ) {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String BASE_TEMPLATE = "{0}-{1} T{2}/{3} F{4}/{5}";
     private static final String PRECIPITATION_TEMPLATE = "RA{0}% {1}";
+    private static final String TUBE_TEMPLATE = "TFL {0} {1}";
 
     private String generateMetarBaseMsg() {
         return MessageFormat.format(BASE_TEMPLATE,
@@ -47,11 +52,17 @@ public record WeatherSummary(
         );
     }
 
-    public String generateMetarSummary() {
-        return String.join(" ", generateMetarBaseMsg(), generateMetarPrecipitationMsg()).trim();
+    private String generateMetarTubeMsg() {
+        return MessageFormat.format(TUBE_TEMPLATE,
+            tubeName.toUpperCase(),
+            tubeSeverity == 10 ? "GOOD": "BAD");
     }
 
-    public WeatherSummary(WeatherForecastClient.OpenMeteoForecast forecast) {
+    public String generateMetarSummary() {
+        return String.join(" ", generateMetarBaseMsg(), generateMetarPrecipitationMsg(), generateMetarTubeMsg()).trim();
+    }
+
+    CommuteSummary(WeatherForecastClient.OpenMeteoForecast forecast, TubeStatusClient.TubeStatus tubeStatus) {
         this(
             forecast.time().get(0),
             forecast.time().get(forecast.time().size() - 1),
@@ -60,7 +71,11 @@ public record WeatherSummary(
             Collections.min(forecast.apparent_temperature()),
             Collections.max(forecast.apparent_temperature()),
             Collections.max(forecast.precipitation()) * 4,
-            Collections.max(forecast.precipitation_probability())
+            Collections.max(forecast.precipitation_probability()),
+
+            tubeStatus.name(),
+            tubeStatus.lineStatuses().get(0).statusSeverity(),
+            tubeStatus.lineStatuses().get(0).statusSeverityDescription()
         );
     }
 };
