@@ -47,7 +47,7 @@ public record CommuteSummary(
             rainIntensity = "+RA";
         }
         return MessageFormat.format(PRECIPITATION_TEMPLATE,
-            highestPrecipitationProb * 100,
+            highestPrecipitationProb,
             rainIntensity
         );
     }
